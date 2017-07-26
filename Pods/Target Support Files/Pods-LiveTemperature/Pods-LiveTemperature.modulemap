@@ -1,0 +1,6 @@
+framework module Pods_LiveTemperature {
+  umbrella header "Pods-LiveTemperature-umbrella.h"
+
+  export *
+  module * { export * }
+}
