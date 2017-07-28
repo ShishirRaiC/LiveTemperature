@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tempLabel: UILabel!
     var ref: DatabaseReference!
     var inFarhenhiet = true
-    var currentTemp = 0.0
+    var currentTemp : Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,14 +25,14 @@ class ViewController: UIViewController {
         self.tempLabel.text = "Waiting..."
         self.ref.child("temp").child("current").observeSingleEvent(of: DataEventType.value) { (snapshot: DataSnapshot) in
             let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            self.currentTemp = postDict["value"]! as! Double
+            self.currentTemp = postDict["value"]! as? Double
             self.tempLabel.text = String(describing: "\(self.getCorrectTemp())")
             self.adjustBackground()
         }
         
         ref.child("temp").child("current").observe(DataEventType.value) { (snapshot : DataSnapshot) in
             let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            self.currentTemp = postDict["value"]! as! Double
+            self.currentTemp = postDict["value"]! as? Double
             self.tempLabel.text = String(describing: "\(self.getCorrectTemp())")
             self.adjustBackground()
         }
@@ -61,23 +61,26 @@ class ViewController: UIViewController {
     }
     
     fileprivate func getCorrectTemp() -> String{
+        if(currentTemp == nil){
+            return ""
+        }
         if(inFarhenhiet){
-            return String(format: "%.2f ℉", currentTemp)
+            return String(format: "%.2f ℉", currentTemp!)
         }else{
-            return String(format: "%.2f ℃", (currentTemp - 32)*(5/9))
+            return String(format: "%.2f ℃", (currentTemp! - 32)*(5/9))
         }
     }
     
     fileprivate func adjustBackground(){
-        if(currentTemp == 0.0){
+        if(currentTemp == nil){
             return
         }
         
-        if(currentTemp < MyUserDefaults().getMinTemp()){
+        if(currentTemp! < MyUserDefaults().getMinTemp()){
             UIView.animate(withDuration: 1, animations: {
                     self.view.backgroundColor = UIColor.minTempColor
             })
-        }else if(currentTemp > MyUserDefaults().getMaxTemp()){
+        }else if(currentTemp! > MyUserDefaults().getMaxTemp()){
             UIView.animate(withDuration: 1, animations: {
                 self.view.backgroundColor = UIColor.maxTempColor
             })
