@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Barlow:500');
+
+body {
+  text-align: center;
+}
+.container {
+  width: 80%;
+  margin: 15px auto;
+}
